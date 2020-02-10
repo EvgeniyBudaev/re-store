@@ -1,8 +1,39 @@
 import React from "react";
+import { connect } from 'react-redux';
 
 import "./shopping-cart-table.css";
 
-const ShoppingCartTable = () => {
+const ShoppingCartTable = ({items, total, onIncrease, onDecrease, onDelete}) => {
+
+  const renderRow = (item, idx) => {
+    const {id, title, count, total} = item;
+    return (
+      <tr key={id}>
+<td>{idx + 1}</td>
+    <td>{title}</td>
+    <td>{count}</td>
+<td>{total} руб.</td>
+<td>
+  <button
+  onClick={() => onDecrease(id)}
+   className="btn btn-outline-warning">
+    <i className="fa fa-minus-circle"></i>
+  </button>
+  <button
+  onClick={() => onIncrease(id)}
+   className="btn btn-outline-success">
+    <i className="fa fa-plus-circle"></i>
+  </button>
+  <button
+  onClick={() => onDelete(id)}
+   className="btn btn-outline-danger">
+    <i className="fa fa-trash-o"></i>
+  </button>
+</td>
+      </tr>
+    );
+  };
+
   return (
     <div className="shopping-cart-table">
       <h2>Your order</h2>
@@ -18,26 +49,38 @@ const ShoppingCartTable = () => {
         </thead>
 
         <tbody>
-          <td>1</td>
-          <td>Site Reliability Engineering</td>
-          <td>2</td>
-          <td>40 руб.</td>
-          <td>
-            <button className="btn btn-outline-danger">
-              <i className="fa fa-trash-o"></i>
-            </button>
-            <button className="btn btn-outline-success">
-              <i className="fa fa-plus-circle"></i>
-            </button>
-            <button className="btn btn-outline-warning">
-              <i className="fa fa-minus-circle"></i>
-            </button>
-          </td>
+        {
+            items.map(renderRow)
+          }        
         </tbody>
       </table>
-      <div className="total">Total: $210</div>
+
+        <div className="total">Total: ${total}</div>
     </div>
   );
 };
 
-export default ShoppingCartTable;
+const mapStateToProps = ({ cartItems, orderTotal }) => {
+  return {
+    items: cartItems,
+    total: orderTotal
+  };
+};
+
+const mapDispatchToProps = () => {
+  return {
+    onIncrease: (id) => {
+      console.log(`Increase ${id}`);
+    },
+
+    onDecrease: (id) => {
+      console.log(`Decrease ${id}`);
+    },
+
+    onDelete: (id) => {
+      console.log(`Delete ${id}`);
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShoppingCartTable);
